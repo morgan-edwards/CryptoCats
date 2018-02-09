@@ -22,9 +22,13 @@ contract CatFactory {
   //Function syntax as follows, NB the _ before non-global variables
   //Functions are public by default, make them private if there is vulnerability concern
   //private functions can only be invokes by other functions within contract
+  //internal functions can be called by any child contract
   //it's conventional to start private functions with an _
-  function _createCat(string _name, uint _dna) private {
+  function _createCat(string _name, uint _dna) internal {
     uint id = cats.push(Cat(_name, _dna)) - 1;
+    // msg.sender is a built-in that returns the address of whoever invoked the f
+    catToOwner[id] = msg.sender;
+    ownerToCatCount[msg.sender]++;
     //fire the event
     NewCat(id, _name, _dna);
     //Front-end could listen to the event like this:
@@ -40,8 +44,8 @@ contract CatFactory {
   }
   //Bringing all these private helper functions together into public API
   function createRandomCat(string _name) public {
+    require(ownerToCatCount[msg.sender] == 0);
     uint randDna = _generateRandomDna(_name);
     _createCat(_name, randDna);
   }
-
 }
