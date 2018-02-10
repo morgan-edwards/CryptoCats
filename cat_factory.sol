@@ -1,7 +1,8 @@
 pragma solidity ^0.4.19;
 
-contract CatFactory {
+import "./ownable.sol";
 
+contract CatFactory is Ownable {
   //Declare any events up here
   event NewCat(uint id, string name, uint dna);
   //unint => unsigned intergers, non-negative, default uint256

@@ -4,7 +4,7 @@ import "./cat_contract.sol";
 
 // Cats eat their young, which live in another contract, to get the kitten DNA we must
 // interface with that smart contract
-contract KittyInterface {
+contract KittyInterface { //is also Ownable through inheritence
   //functions in solidity can return multiple values
   function getKitty(uint256 _id) external view returns (
     bool isGestating,
@@ -21,11 +21,15 @@ contract KittyInterface {
 }
 
 contract CatFeeding is CatFactory {
-
-  address ckAddress = 0x06012c8cf97BEaD5deAe237070F9587f8E7A266d;
   //this creates a KittyInterface named kittyContract and initializes it with the
   //proper address
-  KittyInterface kittyContract = KittyInterface(ckAddress);
+  KittyInterface kittyContract;
+
+  //Because SCs are immutable, addresses will be replaced to update code, so hardcoding
+  //addresses should be avoided, and setter methods should be implemented.
+  function setKittyContractAddress(address _address) external onlyOwner { //onlyOwner modifier invoked
+    kittyContract = KittyInterface(_address);
+  }
 
   function feedAndMultiply(uint _catId, uint _targetDna, string _species) public {
     require(msg.sender == catToOwner[_catId]);
