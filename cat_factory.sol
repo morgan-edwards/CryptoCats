@@ -8,10 +8,15 @@ contract CatFactory is Ownable {
   //unint => unsigned intergers, non-negative, default uint256
   uint dnaDigits = 16;
   uint dnaModulus = 10 ** dnaDigits;
+  uint coolDownTime = 1 days; //solidity has built in time measures based on Unix time
   //structs are like mini-classes with no logic
   struct Cat {
     string name;
     uint dna;
+    uint32 level; //these two are an example of struct packing
+    uint32 readyTime;
+    uint16 winCount; //the digit after uint(n) sets the max value to 2^n
+    uint lossCount;
   }
   //Arrays can be dyanmic [] or fixed [5]
   //when a variable is declared public, a getter is automatically assigned syntax example:
@@ -26,7 +31,7 @@ contract CatFactory is Ownable {
   //internal functions can be called by any child contract
   //it's conventional to start private functions with an _
   function _createCat(string _name, uint _dna) internal {
-    uint id = cats.push(Cat(_name, _dna)) - 1;
+    uint id = cats.push(Cat(_name, _dna, 1, uint32(now + coolDownTime), 0, 0)) - 1;
     // msg.sender is a built-in that returns the address of whoever invoked the f
     catToOwner[id] = msg.sender;
     ownerToCatCount[msg.sender]++;
